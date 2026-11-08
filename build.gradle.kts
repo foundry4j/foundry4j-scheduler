@@ -2,6 +2,7 @@ plugins {
     java
     jacoco
     id("com.vanniktech.maven.publish") version "0.34.0"
+    id("org.sonarqube") version "7.5.0.8588"
 }
 
 group = "io.github.foundry4j"
@@ -60,6 +61,31 @@ tasks.jacocoTestCoverageVerification {
 
 tasks.check {
     dependsOn(tasks.jacocoTestCoverageVerification)
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "foundry4j_foundry4j-scheduler")
+        property("sonar.organization", "foundry4j")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml")
+    }
+}
+
+// Uploading analysis requires coverage data and a token; fail fast with
+// actionable guidance instead of the scanner's opaque authorization errors.
+tasks.matching { it.name == "sonar" }.configureEach {
+    dependsOn(tasks.jacocoTestReport)
+    doFirst {
+        check(
+            providers.gradleProperty("sonar.token").isPresent ||
+                providers.environmentVariable("SONAR_TOKEN").isPresent
+        ) {
+            "Missing SonarCloud token: set the SONAR_TOKEN environment variable " +
+                "or the 'sonar.token' Gradle property. " +
+                "See 'Code analysis with SonarCloud' in README.md."
+        }
+    }
 }
 
 mavenPublishing {

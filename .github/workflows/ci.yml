@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-analyze:
+    name: Build, test and analyze
+    runs-on: ubuntu-latest
+
+    # Job-level env so the step-level "if" guard can see SONAR_TOKEN.
+    # On fork pull requests the secret resolves to an empty string.
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          # Full history is required for SonarCloud new-code analysis.
+          fetch-depth: 0
+
+      - name: Set up JDK 27
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '27'
+          cache: gradle
+
+      - name: Build, test and verify coverage
+        # Runs the tests, the JaCoCo XML report consumed by SonarCloud and the
+        # 80% coverage verification gate.
+        run: ./gradlew check
+
+      - name: SonarCloud analysis
+        # Fork pull requests do not have access to repository secrets; the scan
+        # is skipped automatically when SONAR_TOKEN is absent. The scanner
+        # picks up the SONAR_TOKEN environment variable by itself.
+        if: ${{ env.SONAR_TOKEN != '' }}
+        run: ./gradlew sonar
+
+      - name: Upload JaCoCo report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: build/reports/jacoco/
+          if-no-files-found: error
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: build/reports/tests/test/
+          if-no-files-found: warn
