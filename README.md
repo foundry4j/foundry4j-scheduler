@@ -1,18 +1,14 @@
-<p align="left">
-  <img src="docs/logo.svg" alt="foundry4j-scheduler logo" width="100">
-</p>
-
 # Foundry4j Scheduler
+
+<img src="docs/logo.svg" alt="Foundry4j Scheduler logo" align="right" width="128" height="128" />
 
 A zero-dependency, high-performance task scheduling library for Java 27,
 built on a hashed timing wheel and virtual threads.
 
-<p>
-  <a href="https://openjdk.org/"><img src="https://img.shields.io/badge/Java-27+-blue" alt="Java 27+"></a>
-  <img src="https://img.shields.io/badge/dependencies-zero-brightgreen" alt="zero dependencies">
-  <img src="https://img.shields.io/badge/coverage-93%25-brightgreen" alt="93% line coverage">
-  <img src="https://img.shields.io/badge/tests-JUnit%206-25a162" alt="JUnit 6">
-</p>
+![Java 27+](https://img.shields.io/badge/Java-27%2B-ED8B00?logo=openjdk&logoColor=white)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.foundry4j/foundry4j-scheduler?logo=apachemaven&color=blue)](https://central.sonatype.com/artifact/io.github.foundry4j/foundry4j-scheduler)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=foundry4j_foundry4j-scheduler&metric=coverage)](https://sonarcloud.io/summary/new_code?id=foundry4j_foundry4j-scheduler)
+[![CI](https://github.com/foundry4j/foundry4j-scheduler/actions/workflows/ci.yml/badge.svg)](https://github.com/foundry4j/foundry4j-scheduler/actions/workflows/ci.yml)
 
 ## Features
 
@@ -24,8 +20,6 @@ built on a hashed timing wheel and virtual threads.
   thread, so thousands of concurrent tasks never exhaust platform threads.
 - **Three trigger types** — one-shot, fixed-rate (drift-free), and fixed-delay,
   modelled as a sealed record hierarchy.
-- **Modern Java 27** — `///` Markdown doc comments, sealed types, records,
-  pattern matching with unnamed patterns, and virtual threads throughout.
 - **Clean lifecycle** — `AutoCloseable`, idempotent shutdown, cancellation via
   handles, and per-task failure reporting.
 
