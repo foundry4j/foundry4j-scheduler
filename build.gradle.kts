@@ -1,6 +1,7 @@
 plugins {
     java
     jacoco
+    id("com.vanniktech.maven.publish") version "0.34.0"
 }
 
 group = "io.github.foundry4j"
@@ -59,4 +60,58 @@ tasks.jacocoTestCoverageVerification {
 
 tasks.check {
     dependsOn(tasks.jacocoTestCoverageVerification)
+}
+
+mavenPublishing {
+    publishToMavenCentral(automaticRelease = true)
+
+    if (providers.gradleProperty("signingInMemoryKey").isPresent) {
+        signAllPublications()
+    }
+
+    pom {
+        name.set("foundry4j-scheduler")
+        description.set(
+            "Zero-dependency, high-performance task scheduling library for Java 27+, " +
+                "built on a hashed timing wheel and virtual threads."
+        )
+        inceptionYear.set("2026")
+        url.set("https://github.com/foundry4j/foundry4j-scheduler")
+        licenses {
+            license {
+                name.set("MIT License")
+                url.set("https://opensource.org/license/mit")
+                distribution.set("repo")
+            }
+        }
+        developers {
+            developer {
+                id.set("tuyucheng777")
+                name.set("tuyucheng777")
+                email.set("925343663@qq.com")
+            }
+        }
+        scm {
+            url.set("https://github.com/foundry4j/foundry4j-scheduler")
+            connection.set("scm:git:git://github.com/foundry4j/foundry4j-scheduler.git")
+            developerConnection.set("scm:git:ssh://github.com/foundry4j/foundry4j-scheduler.git")
+        }
+    }
+}
+
+// Fail fast with actionable guidance when publishing without credentials,
+// instead of the plugin's cryptic "maven-central-build-service" failure.
+tasks.matching { it.name == "publishAllPublicationsToMavenCentralRepository" }.configureEach {
+    doFirst {
+        val missing = listOf(
+            "mavenCentralUsername",
+            "mavenCentralPassword",
+            "signingInMemoryKey",
+            "signingInMemoryKeyPassword"
+        ).filterNot { providers.gradleProperty(it).isPresent }
+        check(missing.isEmpty()) {
+            "Missing Gradle properties: ${missing.joinToString()}. " +
+                "See 'Publishing to Maven Central' in README.md for setup instructions."
+        }
+    }
 }
