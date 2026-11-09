@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "io.github.foundry4j"
-version = "1.0.0"
+version = "1.0.1"
 
 repositories {
     mavenCentral()
@@ -72,8 +72,6 @@ sonar {
     }
 }
 
-// Uploading analysis requires coverage data and a token; fail fast with
-// actionable guidance instead of the scanner's opaque authorization errors.
 tasks.matching { it.name == "sonar" }.configureEach {
     dependsOn(tasks.jacocoTestReport)
     doFirst {
@@ -125,8 +123,6 @@ mavenPublishing {
     }
 }
 
-// Fail fast with actionable guidance when publishing without credentials,
-// instead of the plugin's cryptic "maven-central-build-service" failure.
 tasks.matching { it.name == "publishAllPublicationsToMavenCentralRepository" }.configureEach {
     doFirst {
         val missing = listOf(
